@@ -1,0 +1,34 @@
+services:
+  db: 
+    image: mysql
+    container_name: mysql-container
+    restart: always
+    networks: 
+        default:
+          aliases: 
+            - database
+    environment:
+      MYSQL_USER: django
+      MYSQL_PASSWORD: django123
+      MYSQL_ROOT_PASSWORD:  wes123
+      MYSQL_DATABASE: biblioteca
+    volumes:
+      - ./db/data:/var/lib/mysql  
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    ports:
+      - "3306:3306"
+
+  api:
+      build: ./
+      container_name: django-container
+      stop_signal: SIGINT
+      networks: 
+        default:
+          aliases: 
+            - api
+      volumes:
+        - ./djangobiblioteca:/usr/src/app
+      ports:
+        - "8000:8000" 
+      depends_on:
+        - db
